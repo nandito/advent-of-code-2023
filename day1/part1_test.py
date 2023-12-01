@@ -1,4 +1,4 @@
-from main import get_numbers
+from part1 import get_numbers
 
 
 def test_get_numbers():

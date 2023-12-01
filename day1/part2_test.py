@@ -1,4 +1,4 @@
-from main2 import (
+from part2 import (
     find_all,
     get_larger_num,
     get_numbers,
