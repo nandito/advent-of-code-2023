@@ -1,3 +1,6 @@
+from io import TextIOWrapper
+
+
 def get_numbers(line: str):
     """
     Get the sum of the first and last digit of a string of numbers.
@@ -20,9 +23,14 @@ def get_numbers(line: str):
     return first_digit + last_digit
 
 
-with open("input") as f:
+def solve_part1(file: TextIOWrapper):
+    """
+    Solve part 1 of the puzzle.
+    :param file: opened file 
+    :return: None
+    """
     row_values = []
-    for file_line in f:
+    for file_line in file:
         row_value = get_numbers(file_line)
         row_values.append(row_value)
     sums = sum([int(n) for n in row_values])

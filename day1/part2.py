@@ -1,3 +1,5 @@
+from io import TextIOWrapper
+
 """Number words in order from one to nine."""
 number_word_list = [
     "one",
@@ -141,9 +143,14 @@ def get_string_and_digit_numbers(line):
     return int(smallest_digit + largest_digit)
 
 
-with open("input") as f:
+def solve_part2(file: TextIOWrapper):
+    """
+    Solve part 2 of the puzzle.
+    :param file: opened file
+    :return: None
+    """
     row_values = []
-    for file_line in f:
+    for file_line in file:
         row_value = get_string_and_digit_numbers(file_line)
         row_values.append(row_value)
     sums = sum(row_values)
