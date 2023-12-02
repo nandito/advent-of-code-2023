@@ -4,16 +4,21 @@ max_cube_counts = {"red": 12, "green": 13, "blue": 14}
 
 
 def check_possibility(line):
+    """
+    Checks if the line wants to use enough cubes
+    :param line: string the game details
+    :return: ("game_id", is_possible), like ("1", True)
+    """
     is_possible = True
     game_id = line.split(":")[0].split(" ")[1]
     sessions = line.split(":")[1].strip().split("; ")
     for session in sessions:
         rounds = session.split(", ")
-        for round in rounds:
-            count, color = round.split(" ")
+        for sround in rounds:
+            count, color = sround.split(" ")
             if max_cube_counts[color] < int(count):
                 is_possible = False
-                # TODO: early return
+                break
 
     return game_id, is_possible
 
