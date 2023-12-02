@@ -1,8 +1,15 @@
-import pandas as pd
 from io import TextIOWrapper
 
+import pandas as pd
 
-def count_colors(line):
+
+def get_max_cube_counts_product(line):
+    """
+    Calculate the power of the minimum set of cubes in the line (game).
+    :param line: string the game details
+    :return: the product of the max cubes for each color. This max represents
+    the minimum set of required cubes.
+    """
     # print("\n\nLINE:", line)
     sessions = line.split(": ")[1].strip().split("; ")
     games = pd.DataFrame(columns=["red", "green", "blue"])
@@ -33,6 +40,6 @@ def solve_part2(file: TextIOWrapper):
     cube_products = []
 
     for file_line in file:
-        cube_products.append(count_colors(file_line))
+        cube_products.append(get_max_cube_counts_product(file_line))
 
     print(sum(cube_products))
