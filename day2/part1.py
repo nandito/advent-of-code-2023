@@ -1,3 +1,5 @@
+from io import TextIOWrapper
+
 max_cube_counts = {"red": 12, "green": 13, "blue": 14}
 
 
@@ -16,14 +18,17 @@ def check_possibility(line):
     return game_id, is_possible
 
 
-with open("input") as f:
-    lines = f.readlines()
+def solve_part1(file: TextIOWrapper):
+    """
+    Solve part 1 of the puzzle.
+    :param file: opened file
+    :return: None
+    """
     possible_game_ids = []
 
-    for line in lines:
-        game_id, is_possible = check_possibility(line)
+    for file_line in file:
+        game_id, is_possible = check_possibility(file_line)
         if is_possible:
             possible_game_ids.append(int(game_id))
-
 
     print(sum(possible_game_ids))

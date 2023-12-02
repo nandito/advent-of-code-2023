@@ -1,4 +1,6 @@
 import pandas as pd
+from io import TextIOWrapper
+
 
 def count_colors(line):
     # print("\n\nLINE:", line)
@@ -16,16 +18,21 @@ def count_colors(line):
         # Remove the color row
         round_df = round_df[:1]
         # Add it to the games df
-        games = pd.concat([round_df,games])
+        games = pd.concat([round_df, games])
 
     # print("max:\n", games.max().prod())
     return games.max().prod()
 
-with open("input") as f:
-    lines = f.readlines()
+
+def solve_part2(file: TextIOWrapper):
+    """
+    Solve part 1 of the puzzle.
+    :param file: opened file
+    :return: None
+    """
     cube_products = []
 
-    for line in lines:
-        cube_products.append(count_colors(line))
+    for file_line in file:
+        cube_products.append(count_colors(file_line))
 
     print(sum(cube_products))
