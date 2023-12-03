@@ -1,6 +1,3 @@
-import numpy as np
-
-
 def has_adjacent_symbol(col, row, matrix):
     has_adjacent = False
     directions = [
@@ -49,17 +46,17 @@ def get_numbers_with_adjacents(matrix):
             if cell.isnumeric() is False:
                 if current_num != "":
                     if current_num_has_adjacent:
-                        print("✅:", current_num, "position:", row, col)
+                        # print("✅:", current_num, "position:", row, col)
                         numbers_with_adjacents.append(int(current_num))
                     else:
-                        print("🚫:", current_num, "position:", row, col)
+                        # print("🚫:", current_num, "position:", row, col)
                         numbers_without_adjacents.append(int(current_num))
                     current_num = ""
                     current_num_has_adjacent = False
                 continue
             current_num = current_num + cell
             has_adjacent = has_adjacent_symbol(row, col, matrix)
-            print(cell, "current_num", current_num, has_adjacent)
+            # print(cell, "current_num", current_num, has_adjacent)
             if has_adjacent:
                 current_num_has_adjacent = True
             # print("current_num:", current_num, "has_adjacent:", current_num_has_adjacent, "row,col", row,col)
@@ -67,10 +64,10 @@ def get_numbers_with_adjacents(matrix):
         # TODO: this is only just for checking nums at the end of rows. Kinda duplication, optimize
         if current_num != "":
             if current_num_has_adjacent:
-                print("✅:", current_num)
+                # print("✅:", current_num)
                 numbers_with_adjacents.append(int(current_num))
             else:
-                print("🚫:", current_num)
+                # print("🚫:", current_num)
                 numbers_without_adjacents.append(int(current_num))
             current_num = ""
             current_num_has_adjacent = False
@@ -80,11 +77,8 @@ def get_numbers_with_adjacents(matrix):
     return numbers_with_adjacents, numbers_without_adjacents
 
 
-with open("input") as f:
-    m = np.array([])
-    for file_line in f:
-        m = np.array([*m, [*file_line.strip()]])
-
-    # print(m)
-    (numbers_with_adjacents, numbers_without_adjacents) = get_numbers_with_adjacents(m)
+def solve_part1(matrix):
+    (numbers_with_adjacents, numbers_without_adjacents) = get_numbers_with_adjacents(
+        matrix
+    )
     print(sum(numbers_with_adjacents))

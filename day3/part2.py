@@ -101,13 +101,9 @@ def get_surrounding_numbers(position, matrix):
     return nums
 
 
-with open("input") as f:
-    m = np.array([])
-    for file_line in f:
-        m = np.array([*m, [*file_line.strip()]])
-
-    gear_chars = find_gear_char_positions(m)
-    surrounding_numbers = [get_surrounding_numbers(pos, m) for pos in gear_chars]
+def solve_part2(matrix):
+    gear_chars = find_gear_char_positions(matrix)
+    surrounding_numbers = [get_surrounding_numbers(pos, matrix) for pos in gear_chars]
     gears = [np.prod(sn) for sn in surrounding_numbers if len(sn) == 2]
     total_gears = sum(gears)
     print(total_gears)
