@@ -1,12 +1,5 @@
 import numpy as np
 
-# 1. find gear char positions
-# 2. look around the gear char:
-#       if any char around is a number: add to gear_numbers=[]
-#       return gear_numbers[]
-# 3. push the multiplication of the gear_numbers to a gear=[] if it has length 2
-# 4. sum up gear
-
 
 def find_gear_char_positions(matrix):
     elements = np.where(matrix == "*")
@@ -15,8 +8,6 @@ def find_gear_char_positions(matrix):
 
 
 def get_full_digit(digit, position, matrix):
-    # decrease the 2nd num until 0th col | non-numeric => insert numeric before
-    # increate the 2nd num until end of col | non-numeric => append numeric after
     # print(digit)
     full_digit = digit
     range_before = range(0, position[1])
@@ -40,10 +31,8 @@ def get_full_digit(digit, position, matrix):
 
 
 def filter_same_numbers(surrounding_digits):
-    # cords = [n[1] for n in surrounding_digits]
     uniques = []
     row_cache = {}
-    # for cord in cords:
 
     for sd in surrounding_digits:
         # print("digit_cords", sd[1])
