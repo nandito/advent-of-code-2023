@@ -94,14 +94,11 @@ def get_surrounding_numbers(position, matrix):
             if char.isnumeric():
                 surrounding_digits.append([char, [row, col]])
         except IndexError:
-            # print("index error for:", direction)
             pass
     filtered = filter_same_numbers(surrounding_digits)
     nums = [get_full_digit(digit, pos, matrix) for [digit, pos] in filtered]
     # print(nums)
     return nums
-
-    # filter overlaps, when rows equals and col has 1 diff
 
 
 with open("input") as f:
@@ -111,8 +108,6 @@ with open("input") as f:
 
     gear_chars = find_gear_char_positions(m)
     surrounding_numbers = [get_surrounding_numbers(pos, m) for pos in gear_chars]
-    gears = []
-    for sn in surrounding_numbers:
-        if len(sn) == 2:
-            gears.append(np.prod(sn))
-    print(sum(gears))
+    gears = [np.prod(sn) for sn in surrounding_numbers if len(sn) == 2]
+    total_gears = sum(gears)
+    print(total_gears)
