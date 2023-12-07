@@ -47,9 +47,7 @@ def order_deck_by_strength(deck):
     return sorted(deck, key=sort_func)
 
 
-with open("input") as f:
-    lines = f.readlines()
-
+def solve_part1(lines):
     five_of_a_kind = []
     four_of_a_kind = []
     full_house = []
@@ -93,8 +91,7 @@ with open("input") as f:
         + order_deck_by_strength(high_card)
     )
     # print("ordered deck:", ordered_deck)
-    deck_points = 0
+    total_winnings = 0
     for idx, card in enumerate(reversed(ordered_deck)):
-        deck_points += int(card[1]) * (idx + 1)
-    print("deck points:", deck_points)
-    
+        total_winnings += int(card[1]) * (idx + 1)
+    print("total winnings:", total_winnings)
