@@ -24,7 +24,12 @@ def process_joker(hand):
         # print("card with most occurences:", card_with_most_occurences)
         if card_with_most_occurences == "J":
             # print("card with most occurences is J", card_counts[0][np.argsort(card_counts[1])])
-            card_with_most_occurences = card_counts[0][np.argsort(card_counts[1])[-1]]
+            if len(card_counts[0][np.argsort(card_counts[1])]) > 1:
+                card_with_most_occurences = card_counts[0][np.argsort(card_counts[1])[-1]]
+                if card_with_most_occurences == "J":
+                    card_with_most_occurences = card_counts[0][np.argsort(card_counts[1])[-2]]
+            else:
+                card_with_most_occurences = "A"
             # print("card with most occurences2:", card_with_most_occurences)
         jokerized_hand = hand.replace("J", card_with_most_occurences)
 
