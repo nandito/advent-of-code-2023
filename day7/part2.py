@@ -10,6 +10,17 @@ def hand_to_numbers(hand):
     return [format(cards.index(x), "x") for x in list(hand)]
 
 
+def get_highest_card(hand):
+    """Get the highest card"""
+    sorted_hand = sorted(
+        hand,
+        # use the index of the card in the cards array as the key
+        key=lambda x: cards.index(x),
+        reverse=False,
+    )
+    return sorted_hand[0]
+
+
 def process_joker(hand):
     """Process the joker"""
     # if hand has J
@@ -19,18 +30,31 @@ def process_joker(hand):
     if "J" in hand:
         hand_array = np.array(list(hand))
         card_counts = np.unique(hand_array, return_counts=True)
-        # print("card counts:", card_counts)
+        # print("\ncard counts:", card_counts)
+        # this should pick the card wit the most occurences and if there are
+        # multiple, pick the highest excluding J
         card_with_most_occurences = card_counts[0][np.argmax(card_counts[1])]
+        is_every_card_different = np.all(card_counts[1] == card_counts[1][0])
         # print("card with most occurences:", card_with_most_occurences)
-        if card_with_most_occurences == "J":
+
+        if is_every_card_different and card_with_most_occurences != "J":
+            # print("is all occurs the same:",is_every_card_different, "numbers to hands:", hand_to_numbers(hand))
+            card_with_most_occurences = get_highest_card(hand)
+
+        elif card_with_most_occurences == "J":
             # print("card with most occurences is J", card_counts[0][np.argsort(card_counts[1])])
             if len(card_counts[0][np.argsort(card_counts[1])]) > 1:
-                card_with_most_occurences = card_counts[0][np.argsort(card_counts[1])[-1]]
+                card_with_most_occurences = card_counts[0][
+                    np.argsort(card_counts[1])[-1]
+                ]
                 if card_with_most_occurences == "J":
-                    card_with_most_occurences = card_counts[0][np.argsort(card_counts[1])[-2]]
+                    card_with_most_occurences = card_counts[0][
+                        np.argsort(card_counts[1])[-2]
+                    ]
             else:
                 card_with_most_occurences = "A"
             # print("card with most occurences2:", card_with_most_occurences)
+
         jokerized_hand = hand.replace("J", card_with_most_occurences)
 
     return hand, jokerized_hand
