@@ -2,6 +2,8 @@ import re
 
 import pandas as pd
 
+from math import lcm
+
 
 def walk(node_map, current_node, current_direction):
     return node_map.loc[current_node, current_direction]
@@ -26,23 +28,28 @@ def solve_part2(lines):
             continue
 
     node_map.set_index("node", inplace=True)
-    print(current_nodes)
+    # print(current_nodes)
 
-    step_count = 0
+    step_counts = {idx: 0 for idx in range(len(current_nodes))}
     direction_index = 0
-    while True:
-        step_count += 1
-        # print(f"Current nodes: {current_nodes}, direction: {directions[direction_index]}, step count: {step_count}, direction_index: {direction_index}")
-        current_direction = directions[direction_index]
-        for idx,current_node in enumerate(current_nodes):
-            current_nodes[idx] = walk(node_map, current_node, current_direction)
 
-        if all(element.endswith("Z") for element in current_nodes):
-            break
+    for idx, current_node in enumerate(current_nodes):
+        while True:
+            step_counts[idx] += 1
+            # print(
+            #     f"Current node: {current_node}, direction: {directions[direction_index]}, step count: {step_counts}, direction_index: {direction_index}"
+            # )
+            current_direction = directions[direction_index]
+            current_node = walk(node_map, current_node, current_direction)
 
-        if direction_index == len(directions) - 1:
-            direction_index = 0
-        else:
-            direction_index += 1
+            if current_node.endswith("Z"):
+                direction_index = 0
+                break
 
-    print(f"Part 2: {step_count}")
+            if direction_index == len(directions) - 1:
+                direction_index = 0
+            else:
+                direction_index += 1
+
+    solution = lcm(*list(step_counts.values()))
+    print(f"Part 2: {solution}")
