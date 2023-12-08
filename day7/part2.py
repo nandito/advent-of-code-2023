@@ -12,12 +12,29 @@ def hand_to_numbers(hand):
 
 def process_joker(hand):
     """Process the joker"""
-    pass
+    # if hand has J
+    # find the card that has the most occurences, if there are multiple, pick the highest excluding J
+    # replace J with that card
+    jokerized_hand = hand
+    if "J" in hand:
+        hand_array = np.array(list(hand))
+        card_counts = np.unique(hand_array, return_counts=True)
+        # print("card counts:", card_counts)
+        card_with_most_occurences = card_counts[0][np.argmax(card_counts[1])]
+        # print("card with most occurences:", card_with_most_occurences)
+        if card_with_most_occurences == "J":
+            # print("card with most occurences is J", card_counts[0][np.argsort(card_counts[1])])
+            card_with_most_occurences = card_counts[0][np.argsort(card_counts[1])[-1]]
+            # print("card with most occurences2:", card_with_most_occurences)
+        jokerized_hand = hand.replace("J", card_with_most_occurences)
+
+    return hand, jokerized_hand
 
 
 def get_hand_type(hand):
     """Return the type of hand"""
-    hand_array = np.array(list(hand))
+    jokerized_hand = process_joker(hand)
+    hand_array = np.array(list(jokerized_hand[1]))
     card_counts = np.unique(hand_array, return_counts=True)
     if 5 in card_counts[1]:
         return types[0]
@@ -48,6 +65,7 @@ def solve_part2(lines):
     for line in lines:
         [hand, bid] = line.strip().split(" ")
         hand_type = get_hand_type(hand)
+        # print("hand:", hand, "bid:", bid, "hand type:", hand_type)
         if hand_type == types[0]:
             five_of_a_kind.append((hand, bid))
         elif hand_type == types[1]:
