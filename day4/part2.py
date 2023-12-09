@@ -2,8 +2,8 @@ import re
 
 import numpy as np
 
-with open("input") as f:
-    lines = f.readlines()
+
+def solve_part2(lines):
     pattern = r"Card\s*(\d+):\s*(\d+(?:\s*\d*)*)\s*\|\s*(\d+(?:\s*\d*)*)"
     occurrence_map = {}
     for line in lines:
