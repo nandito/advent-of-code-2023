@@ -22,11 +22,9 @@ DIRECTIONS = {
 # If tile is S again, stop and print the directions
 
 
-def find_possible_direction(prev_pos, pos, maze, steps=0):
+def find_possible_direction(prev_pos, pos, maze, tile):
     tile = maze[pos[0], pos[1]]
-    # print(f"\npos {pos}, tile {tile}, steps {steps}, prev_pos {prev_pos}")
-    if tile == "S" and steps > 0:
-        return steps
+    # print(f"\npos {pos}, tile {tile}, prev_pos {prev_pos}")
     options = DIRECTIONS[tile]
     next_options = []
     next_pos = None
@@ -67,13 +65,32 @@ def find_possible_direction(prev_pos, pos, maze, steps=0):
         # next_options.append(next_option)
     # print("next_options", next_options[-1])
     # print("next_pos", next_pos)
-    return find_possible_direction(pos, next_pos, maze, steps + 1)
+    return pos, next_pos, tile
 
 def solve_part1(lines):
     maze = np.array([list(line.strip()) for line in lines])
     print(maze)
     # Find "S" position
-    s_pos = np.argwhere(maze == "S")[0]
-    possible_dir = find_possible_direction(s_pos, s_pos, maze)
-    print(int(possible_dir / 2))
+    # s_pos = np.argwhere(maze == "S")[0]
+    pos = np.argwhere(maze == "S")[0]
+    next_pos = pos
+    # possible_dir = find_possible_direction(s_pos, s_pos, maze)
+    steps = 0
+    # found = False
+    # finished = False
+    tile = maze[pos[0], pos[1]]
+
+    while True:
+        if tile == "S" and steps > 1:
+            print("Found S again, steps", steps)
+            break
+
+        steps += 1
+        pos, next_pos, tile = find_possible_direction(pos, next_pos, maze, tile="S")
+        # print("pos", pos, "next_pos", next_pos, "steps", steps, tile)
+        # if steps > 20:
+        #     break
+
+    # print(int(possible_dir / 2))
+    print((steps-1) / 2)
     pass
