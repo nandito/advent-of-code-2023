@@ -1,15 +1,14 @@
-import time
-
 import numpy as np
 from joblib import Memory
 
-from part1 import tilt
+from part1 import sum_up, tilt
 
 location = "./cachedir"
 memory = Memory(location, verbose=0)
 
 
 def tilt_cycle(rows):
+    rows = np.array(rows)
     north = np.rot90(np.array(list(map(tilt, np.rot90(rows)))), k=3)
     west = np.array(list(map(tilt, north)))
     south = np.rot90(np.array(list(map(tilt, np.rot90(west, k=3)))), k=1)
@@ -18,24 +17,20 @@ def tilt_cycle(rows):
 
 
 def solve_part2(lines):
-    rows = np.array([[*line.strip()] for line in lines])
-    # cycled = tilt_cycle(rows)
-    # cycled = tilt_cycle(cycled)
+    rows = np.array([[*line.strip()] for line in lines]).tolist()
+    period = transient = t = 0
     tilted_rows = rows
+    states = [rows]
     cached_tilt_cycle = memory.cache(tilt_cycle)
-    start = time.time()
-    # for i in range(100000):
-    for i in range(1000000000):
-        if i % 10000 == 0:
-            current_time = time.time()
-            print(
-                "It took {:.2f} s to compute ".format(current_time - start)
-                + str(i)
-                + " iteration"
-            )
-        tilted_rows = cached_tilt_cycle(tilted_rows)
+    target = 1_000_000_000
+    while True:
+        tilted_rows = cached_tilt_cycle(states[t]).tolist()
+        if tilted_rows in states:
+            transient = states.index(tilted_rows)
+            period = t + 1 - transient
+            break
+        states.append(tilted_rows)
+        t += 1
 
-    end = time.time()
-    print("cycles took {:.2f} s to compute".format(end - start))
-
-    print(tilted_rows)
+    total = sum_up(states[(target - transient) % period + transient])
+    return total

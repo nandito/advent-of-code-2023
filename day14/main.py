@@ -28,8 +28,9 @@ args = parser.parse_args()
 with open(args.input_file) as f:
     if args.part == "1":
         solve_part1(f)
-    if args.part == "2":
-        solve_part2(f)
+    elif args.part == "2":
+        result = solve_part2(f)
     else:
         print("Invalid part specified")
         exit(1)
+    print(f"Part {args.part}: {result}")
