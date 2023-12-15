@@ -1,4 +1,5 @@
 import argparse
+import time
 
 from part1 import solve_part1
 from part2 import solve_part2
@@ -26,11 +27,14 @@ parser.add_argument(
 args = parser.parse_args()
 
 with open(args.input_file) as f:
+    start = time.time()
     if args.part == "1":
-        solve_part1(f)
+        result = solve_part1(f)
     elif args.part == "2":
         result = solve_part2(f)
     else:
         print("Invalid part specified")
         exit(1)
+    end = time.time()
     print(f"Part {args.part}: {result}")
+    print("It took {:.2f} s to compute".format(end - start))
