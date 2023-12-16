@@ -64,10 +64,9 @@ def get_directions(current_char, current_direction):
     return next_directions
 
 
-def solve_part1(lines):
-    cave_map = [[*line.strip()] for line in lines]
-    current_pos = np.array([0, 0])
-    current_direction = DIRECTIONS["right"]
+def get_visited_tile_count(cave_map, starting_pos, starting_direction):
+    current_pos = np.array(starting_pos)
+    current_direction = starting_direction
     existing_paths = [(current_pos.tolist(), current_direction)]
     beams = [(current_pos.tolist(), current_direction)]
     while len(beams) > 0:
@@ -97,5 +96,10 @@ def solve_part1(lines):
 
     # print(existing_paths)
     visited_tiles = np.unique(np.array([*map(lambda b: b[0], existing_paths)]), axis=0)
-    # print(visited_tiles)
     return len(visited_tiles)
+
+
+def solve_part1(lines):
+    cave_map = [[*line.strip()] for line in lines]
+    visited_tile_count = get_visited_tile_count(cave_map, [0, 0], DIRECTIONS["right"])
+    return visited_tile_count
