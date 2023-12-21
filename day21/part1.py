@@ -1,51 +1,42 @@
+from collections import deque
+
 import numpy as np
 
-
-def find_possible_moves(garden_map, pos):
-    possible_moves = []
-    if garden_map[pos[0] - 1, pos[1]] == ".":
-        possible_moves.append((pos[0] - 1, pos[1]))
-    if garden_map[pos[0] + 1, pos[1]] == ".":
-        possible_moves.append((pos[0] + 1, pos[1]))
-    if garden_map[pos[0], pos[1] - 1] == ".":
-        possible_moves.append((pos[0], pos[1] - 1))
-    if garden_map[pos[0], pos[1] + 1] == ".":
-        possible_moves.append((pos[0], pos[1] + 1))
-    return possible_moves
-
+# STEPS = 6
+STEPS = 64
 
 
 def solve_part1(lines):
     garden_map = np.array([list(line.strip()) for line in lines])
     start_pos = np.where(garden_map == "S")
+    start_pos = (start_pos[0][0], start_pos[1][0])
     garden_map[start_pos[0], start_pos[1]] = "."
+    garden_map = garden_map.tolist()
 
-    possible_moves = find_possible_moves(garden_map, start_pos)
-    
-    steps = 2
-    step_options = [possible_moves]
-    while steps < 7:
-        print(f"Step {steps}")
-        # print("step_options", step_options)
-        garden_map_copy = garden_map.copy()
-        for step_option in step_options:
-            for step in step_option:
-                garden_map_copy[step[0], step[1]] = "O"
-        # print(garden_map_copy)
-        new_step_options = []
-        for step_option in step_options:
-            for step in step_option:
-                new_step_options.append(find_possible_moves(garden_map, step))
+    # possible_moves = find_possible_moves(garden_map, start_pos)
+    visited = {}
+    to_visit = deque([(start_pos, 0)])
+    while len(to_visit) > 0:
+        coor, steps = to_visit.popleft()
+        if coor in visited:
+            continue
+        if steps == (STEPS + 1):
+            break
+        visited[coor] = steps
+        for add in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            new_coor = (coor[0] + add[0], coor[1] + add[1])
+            try:
+                if garden_map[new_coor[0]][new_coor[1]] == ".":
+                    to_visit.append((new_coor, steps + 1))
+            except IndexError:
+                continue
 
-        step_options = new_step_options
+    garden_map_copy = np.array(garden_map)
+    for k, v in visited.items():
+        if v % 2 == 0:
+            garden_map_copy[k[0]][k[1]] = "O"
 
-        steps += 1
+    print(str(garden_map_copy))
 
-    garden_map_copy = garden_map.copy()
-    for step_option in step_options:
-        for step in step_option:
-            garden_map_copy[step[0], step[1]] = "O"
-    count = np.count_nonzero(garden_map_copy == "O")
-    print(count)
-
-    pass
+    count = sum([1 for v in visited.values() if v % 2 == 0])
+    return count
