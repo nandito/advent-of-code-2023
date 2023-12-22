@@ -2,6 +2,7 @@ import argparse
 import time
 
 from part1 import solve_part1
+from part2 import solve_part2
 
 parser = argparse.ArgumentParser(
     description="Advent of Code 2023 - Day 22",
@@ -29,6 +30,8 @@ with open(args.input_file) as f:
     start = time.time()
     if args.part == "1":
         result = solve_part1(f)
+    elif args.part == "2":
+        result = solve_part2(f)
     else:
         print("Invalid part specified")
         exit(1)
