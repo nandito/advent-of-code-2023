@@ -1,154 +1,71 @@
-import re
-import numpy as np
-
-def get_subrange_left(dest, source):
-    dest_start, dest_end = dest
-    source_start, source_end = source
-    subranges = []
-    print("dest nums", [*range(dest_start, dest_end)])
-    print("source nums", [*range(source_start, source_end)])
-    dest_range = range(dest_start, dest_end)
-    source_range = range(source_start, source_end)
-    overlap_count = len(set(dest_range) & set(source_range))
-    subranges.append([source_start, overlap_count])
-    left_over_start = dest_start + overlap_count
-    left_over_count = len(dest_range) - overlap_count
-    subranges.append([left_over_start, left_over_count])
-    
-    return subranges
-
-def get_subrange_right(dest, source):
-    print(dest, source)
-    dest_start, dest_end = dest
-    source_start, source_end = source
-    subranges = []
-    print("dest nums", [*range(dest_start, dest_end)])
-    print("source nums", [*range(source_start, source_end)])
-    dest_range = range(dest_start, dest_end)
-    source_range = range(source_start, source_end)
-    overlap_count = len(set(dest_range) & set(source_range))
-    ## TODO: fix this what to extract from dest_start
-    left_over_start = dest_start - overlap_count
-    print("left_over_start", left_over_start)
-    left_over_count = len(dest_range) - overlap_count
-    print("overlap_count", overlap_count)
-    subranges.append([dest_end - overlap_count+1, left_over_count])
-    print("left_over_count", left_over_count)
-    # subranges.append([left_over_start, overlap_count])
-    
-    return subranges
-    
+from math import ceil, log10
 
 
-def process_mappings(map, range_to_match):
-    destination_numbers = []
-
-    # create a pairs array. It should group range_to_match to 2 pairs of numbers
-    # e.g. [1, 2, 3, 4] => [[1, 2], [3, 4]]
-    print("range_to_match", range_to_match)
-    pairs = []
-    for i in range(0, len(range_to_match), 2):
-        pairs.append([range_to_match[i], range_to_match[i + 1]])
-
-    print("pairs", pairs)
-    print("map", map)
-
-    # for each pair, find the corresponding map
-    for [dest_start, dest_len] in pairs:
-        dest_end = dest_start + dest_len
-        destination_pair = None
-        destination_pairs = []
-        for target_start, source_start, source_length in map:
-            print("\ndest_start", dest_start, "dest_end", dest_end)
-            print("source_start", source_start, "source_end", source_start + source_length)
-            # if range has no overlap with map, skip
-            if dest_end < source_start or dest_start >= source_start + source_length:
-                print("range has no overlap with map, skip")
-                continue 
-            # if range is fully contained in map, map it
-            if dest_start >= source_start and dest_end <= source_start + source_length:
-                print("range is fully contained in map", dest_start, dest_end)
-                # print("---pair", [dest_start, dest_len], "range", [source_start, source_length])
-                new_source_start = target_start + (dest_start - source_start)
-                destination_pair = [
-                    new_source_start,
-                    (target_start + (dest_end - source_start)) - new_source_start,
-                ]
-                destination_pairs.append(destination_pair)
-                # print("destination_pair", destination_pair)
+def apply_maps(maps, seed):
+    pre_map = seed
+    for m in maps:
+        for ds, ss, rl in m:
+            if ss <= pre_map < ss + rl:
+                pre_map = ds + (pre_map - ss)
                 break
-            if dest_start > source_start and dest_end > source_start + source_length:
-                print("!!   range is partially contained left", dest_start, dest_end)
-                subranges = get_subrange_left([dest_start, dest_end], [source_start, source_start + source_length])
-                # print("subranges", subranges)
-                destination_pairs.extend(subranges)
-                # print("destination_pairs", destination_pairs)
-                break
-            if dest_start < source_start and dest_end < source_start + source_length:
-                print("!!   range is partially contained right", dest_start, dest_end)
-                subranges = get_subrange_right([dest_start, dest_end], [source_start, source_start + source_length])
-                print("subranges", subranges)
-                destination_pairs.extend(subranges)
-                print("destination_pairs", destination_pairs)
-                break
-            # if range is partially contained, add all partial ranges to destination_pairs
-            # else:
-            #     print("range is partially contained", dest_start, dest_end)
-            #     new_source_start = target_start + (dest_start - source_start)
-            #     destination_pair = [
-            #         new_source_start,
-            #         (target_start + (dest_end - source_start)) - new_source_start,
-            #     ]
-            #     print("destination_pair", destination_pair)
-            #     break
-
-            # print("no map found for range", dest_start, dest_end)
-            # destination_pairs.append([dest_start, dest_len])
-
-        # destination_numbers.extend(destination_pair or [dest_start, dest_len])
-        # print("Adding")
-        # print("destination_pair", destination_pair)
-        # print("destination_pairs", destination_pairs)
-        destination_numbers.extend(destination_pairs or [[dest_start, dest_len]])
+    return pre_map
 
 
-    print("destination_numbers", destination_numbers)
-    return np.array(destination_numbers).flatten().tolist()
+def parse_input(lines):
+    seeds = [int(x) for x in lines[0].split(": ")[1].split(" ")]
+    seeds = [(seeds[2 * i], seeds[2 * i + 1]) for i in range(len(seeds) // 2)]
+
+    maps = []
+    curr_map = []
+    for line in lines[3:]:
+        if line == "":
+            continue
+        if ":" in line:
+            maps += [curr_map]
+            curr_map = []
+        else:
+            curr_map += [tuple(int(x) for x in line.split(" "))]
+
+    maps += [curr_map]
+
+    return seeds, maps
 
 
-# with open("sample_input") as f:
-#     lines = f.readlines()
-#     seeds_regex = r"seeds:\s*(\d+(?:\s*\d*)*)"
-#     map_regex = r"(\d+) (\d+) (\d+)"
-#     map_title_regex = r"(\w+)-\w+-(\w+)\smap:"
+def solve_part2(lines):
+    lines = [line.strip() for line in lines]
 
-#     numbers_to_match = []
-#     map = []
+    seeds, maps = parse_input(lines)
 
-#     for line in lines:
-#         if re.search(seeds_regex, line):
-#             # numbers_to_match = [ int(s) for s in re.search(seeds_regex, line).groups()[0].split() ]
-#             seed_ranges = [
-#                 int(s) for s in re.search(seeds_regex, line).groups()[0].split()
-#             ]
-#             for idx, n in enumerate(seed_ranges):
-#                 if idx % 2 == 0:
-#                     numbers_to_match.extend(range(n, n + seed_ranges[idx + 1]))
-#             print("numbers_to_match", numbers_to_match)
+    step_size = int(pow(10, ceil(log10(max(s[1] for s in seeds) / 100))))
+    search_vals = {
+        (ss, ss + sl, s): apply_maps(maps, s)
+        for ss, sl in seeds
+        for s in range(ss, ss + sl, step_size)
+    }
+    rough_est = min(search_vals.items(), key=lambda x: x[1])
 
-#         elif re.search(map_title_regex, line):
-#             map_title = re.search(map_title_regex, line).groups()
-#             numbers_to_match = process_mappings(map, numbers_to_match)
-#             print("numbers_to_match", numbers_to_match)
-#             print("map_title", map_title)
-#             map = []
+    seed_range_start, seed_range_end, best_est = rough_est[0]
+    print(
+        f"Best estimate: {best_est} in seed range {seed_range_start} to {seed_range_end}"
+    )
+    print(
+        f"Step size: {step_size:<8d}, best estimate: {best_est:<10d} near loc {rough_est[1]}"
+    )
 
-#         elif re.search(map_regex, line):
-#             map_data = re.search(map_regex, line).groups()
-#             map = [*map, [int(map_data[0]), int(map_data[1]), int(map_data[2])]]
+    best_loc = rough_est[1]
 
-#     # process last map
-#     numbers_to_match = process_mappings(map, numbers_to_match)
-#     print("numbers_to_match", numbers_to_match)
+    while step_size > 1:
+        left_search = max(best_est - step_size, seed_range_start)
+        right_search = min(best_est + step_size, seed_range_end)
 
-#     print(min(numbers_to_match))
+        step_size = step_size // 10
+        search_vals = {
+            s: apply_maps(maps, s) for s in range(left_search, right_search, step_size)
+        }
+        best_est, best_loc = min(search_vals.items(), key=lambda x: x[1])
+
+        print(
+            f"Step size: {step_size:<8d}, best estimate: {best_est:<10d} near loc {best_loc}"
+        )
+
+    return best_loc
