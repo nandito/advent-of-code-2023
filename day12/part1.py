@@ -1,3 +1,7 @@
+from functools import cache
+
+
+@cache
 def get_arrangement_count(group, sizes, num_done_in_group=0):
     if not group:
         return not sizes and not num_done_in_group
